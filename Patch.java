@@ -20,6 +20,7 @@ import java.awt.Graphics;
 class Patch {
     private boolean isC;
     private double score;
+    private boolean countOwnScore = true;
 
     //A dynamic array of patches (the neighbors)
     private Vector<Patch> neighbors = new Vector<>();
@@ -56,6 +57,10 @@ class Patch {
         this.setColor();
     }
 
+    void setCountOwnScore(boolean countOwnScore){
+        this.countOwnScore = countOwnScore;
+    }
+
     // returns true if and only if patch is cooperating
     boolean isCooperating() {
         return isC;
@@ -90,6 +95,12 @@ class Patch {
 			} 
         }).get().getScore();
 
+        if (this.countOwnScore){
+            if (this.score > maxScore){
+                return;
+            }
+        }
+
         var maxNeighbors = this.neighbors.stream().filter((p) -> {
             return p.getScore() == maxScore;
         }).collect(Collectors.toList());
@@ -107,10 +118,10 @@ class Patch {
         }).count();
 
         if (this.isC){
-            this.score += cooperatorsCount; 
+            this.score = cooperatorsCount; 
         }
         else{
-            this.score += alpha * cooperatorsCount;
+            this.score = alpha * cooperatorsCount;
         }
     }
 

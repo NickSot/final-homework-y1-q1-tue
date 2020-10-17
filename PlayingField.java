@@ -55,6 +55,14 @@ class PlayingField extends JPanel implements ActionListener, ChangeListener {
         });
     }
 
+    public void setCountScore(boolean countOwnScore){
+        for (int i = 0; i < grid.length; i++){
+            for (int j = 0; j < grid.length; j++){
+                grid[i][j].setCountOwnScore(countOwnScore);
+            }
+        }
+    }
+
     private void initializeTimer(int timerStep){
         this.timer = new Timer(timerStep, (e) -> {
             step();
@@ -123,13 +131,13 @@ class PlayingField extends JPanel implements ActionListener, ChangeListener {
     public void step() {
         for (int i = 0; i < grid.length; i++) {
             for (Patch item : grid[i]) {
-                item.execute();
+                item.calculateScore(this.alpha);
             }
         }
 
         for (int i = 0; i < grid.length; i++) {
             for (Patch item : grid[i]) {
-                item.calculateScore(this.alpha);
+                item.execute();
             }
         }
     }
@@ -181,7 +189,7 @@ class PlayingField extends JPanel implements ActionListener, ChangeListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Start")) {
             JButton b = (JButton) e.getSource();
-            b.setText("Stop");
+            b.setText("Pause");
             b.setActionCommand("Stop");
             this.timer.start();
             isTimerRunning = true;
@@ -202,10 +210,10 @@ class PlayingField extends JPanel implements ActionListener, ChangeListener {
         JSlider slider = (JSlider)e.getSource();
 
         if (slider.getName().equals("alphaSlider")){
-           this.alpha = (double)slider.getValue()/100;
+           this.alpha = (double)slider.getValue()/100; //The slider values can range from 0 to 300, and therefore the '/100'.
         }
         else if (slider.getName().equals("paceSlider")){
-            this.timerStep = 1000/slider.getValue();
+            this.timerStep = PrisonersDilemma.maximumTime/slider.getValue();
             this.timer.stop();
             this.timer.setDelay(timerStep);
 
